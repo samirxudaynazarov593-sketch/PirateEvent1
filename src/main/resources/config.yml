@@ -1,0 +1,52 @@
+# ========================================================
+#   PIRATE EVENT CONFIGURATION - PAPER 1.21.1
+# ========================================================
+
+settings:
+  # Event qaysi dunyoda paydo bo'ladi?
+  world: "world"
+  
+  # Schematic fayl nomi (plugins/PirateEvent/ papkasida turishi kerak)
+  schematic-file: "ship.schem"
+  
+  # RTP chegaralari
+  min-x: -2500
+  max-x: 2500
+  min-z: -2500
+  max-z: 2500
+  
+  # Kema yer sathidan necha blok balandlikda paydo bo'ladi?
+  height-above-ground: 100
+  
+  # Xazina ochilish taymeri (soniyalarda, 180s = 3 daqiqa)
+  treasure-timer: 180
+  
+  # Kema markazidan xazina shulkerigacha bo'lgan masofa
+  # Agar schem saqlaganda shulkerda //copy qilgan bo'lsangiz barchasi 0 bo'ladi
+  treasure-offset:
+    x: 0
+    y: 1
+    z: 3
+
+# Kema xazinasida chiqadigan mukofotlar ro'yxati (MATERIAL:SONI)
+loot:
+  - "NETHERITE_INGOT:3"
+  - "DIAMOND:16"
+  - "ENCHANTED_GOLDEN_APPLE:4"
+  - "TOTEM_OF_UNDYING:2"
+  - "ELYTRA:1"
+  - "EXPERIENCE_BOTTLE:32"
+  - "GOLDEN_APPLE:16"
+  - "EMERALD_BLOCK:5"
+
+# Matnlar va xabarlar
+messages:
+  prefix: "&8[&c&lPIRATE&8] "
+  event-started: "&c&lUCHAR QAROQCHILAR KEMASI &epaydo bo'ldi! Osmonga qarang yoki &a/piratecompass &ebilan kashf eting!"
+  event-stopped: "&cQaroqchilar kemasi g'oyib bo'ldi va osmon tozalandi!"
+  timer-start: "&e&lXazina buzila boshladi! &c3 daqiqa &eqoldi. Qaroqchilar jamoasini bartaraf qiling!"
+  timer-waiting: "&cXazina qulflangan! Ochilishiga hali &e%time% &csoniya bor."
+  unlocked: "&a&lXazina ochildi! Qaroqchilar xazinasidagi boyliklarni olib keting!"
+  no-break: "&cQaroqchilar kemasi bloklarini sindirish taqiqlangan!"
+  compass-given: "&aKema tomonga yetaklovchi maxsus kompas berildi!"
+  no-active-event: "&cHozirda faol Qaroqchilar Kemasi mavjud emas!"
