@@ -1,0 +1,32 @@
+name: Build PirateEvent Plugin
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repozitoriyani yuklash
+        uses: actions/checkout@v4
+
+      - name: Java 21 ni sozlash
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Maven orqali JAR kompilatsiya qilish
+        run: mvn clean package -B
+
+      - name: Tayyor JAR faylni yuklab olish uchun saqlash (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PirateEvent-Paper-1.21.1
+          path: target/*.jar
