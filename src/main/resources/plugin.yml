@@ -1,0 +1,15 @@
+name: PirateEvent
+version: 1.0.0
+main: com.articraft.pirate.PirateEventPlugin
+api-version: '1.21'
+author: Articraft
+depend: [WorldEdit]
+description: Uchar qaroqchilar kemasi xazina eventi
+
+commands:
+  pirate:
+    description: Pirate Event asosiy boshqaruv buyrug'i
+    permission: pirate.admin
+    permission-message: "§cSizda ushbu buyruq uchun ruxsat yo'q!"
+  piratecompass:
+    description: Qaroqchilar kemasiga yo'naltiruvchi kompas menyusi
