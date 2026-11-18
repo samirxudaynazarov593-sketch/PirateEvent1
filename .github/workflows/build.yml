@@ -22,10 +22,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Maven orqali JAR kompilatsiya qilish
-        run: mvn clean package -B
+      - name: Maven orqali JAR kompilatsiya qilish (Debug rejim)
+        run: mvn clean package -X -B
 
-      - name: Tayyor JAR faylni yuklab olish uchun saqlash (Artifact)
+      - name: Tayyor JAR faylni tekshirish va saqlash
         uses: actions/upload-artifact@v4
         with:
           name: PirateEvent-Paper-1.21.1
