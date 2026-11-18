@@ -1,23 +1,11 @@
 package com.articraft.pirate;
 
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.EditSession;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -66,55 +54,56 @@ public class PirateManager {
         Location shipOrigin = new Location(world, x, y, z);
         Set<Location> shipBlocks = new HashSet<>();
 
-        // WorldEdit orqali schem paste qilish va bloklarni ro'yxatga olish
-        File schemFile = new File(plugin.getDataFolder(), plugin.getConfig().getString("settings.schematic-file", "ship.schem"));
-        if (!schemFile.exists()) {
-            plugin.getLogger().severe("ship.schem fayli mavjud emas, event bekor qilindi!");
-            return;
-        }
+        // 🏴‍☠️ HAGIQIY QAROQCHILAR KEMASI KORPUSINI YASASH (OVAL / BURUNLI QAYIQ SHAKLI)
+        int length = 16; // Kema uzunligi
+        int width = 5;   // Kema eni
 
-        ClipboardFormat format = ClipboardFormats.findByFile(schemFile);
-        if (format == null) return;
+        for (int l = -length / 2; l <= length / 2; l++) {
+            // Kema eni oval shaklda bo'lishi uchun (burun va quyruq qismi torayadi)
+            int currentWidth = (int) (width * Math.sin(((double) (l + length / 2) / length) * Math.PI));
+            if (currentWidth < 1) currentWidth = 1;
 
-        try (ClipboardReader reader = format.getReader(new FileInputStream(schemFile))) {
-            Clipboard clipboard = reader.read();
-            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-                Operation operation = new com.sk89q.worldedit.schematic.ClipboardHolder(clipboard)
-                        .createPaste(editSession)
-                        .to(BlockVector3.at(x, y, z))
-                        .ignoreAirBlocks(true)
-                        .build();
-                Operations.complete(operation);
+            for (int w = -currentWidth; w <= currentWidth; w++) {
+                // Paluba (Taglik)
+                Block deck = world.getBlockAt(x + w, y, z + l);
+                deck.setType(Material.DARK_OAK_PLANKS);
+                shipBlocks.add(deck.getLocation());
 
-                BlockVector3 min = clipboard.getMinimumPoint();
-                BlockVector3 max = clipboard.getMaximumPoint();
-                BlockVector3 offset = BlockVector3.at(x, y, z).subtract(clipboard.getOrigin());
+                // Tagidagi qavat (Qalinligi uchun)
+                Block subDeck = world.getBlockAt(x + w, y - 1, z + l);
+                subDeck.setType(Material.SPRUCE_WOOD);
+                shipBlocks.add(subDeck.getLocation());
 
-                for (int bx = min.getBlockX(); bx <= max.getBlockX(); bx++) {
-                    for (int by = min.getBlockY(); by <= max.getBlockY(); by++) {
-                        for (int bz = min.getBlockZ(); bz <= max.getBlockZ(); bz++) {
-                            int realX = bx + offset.getBlockX();
-                            int realY = by + offset.getBlockY();
-                            int realZ = bz + offset.getBlockZ();
-                            Block b = world.getBlockAt(realX, realY, realZ);
-                            if (b.getType() != Material.AIR) {
-                                shipBlocks.add(b.getLocation());
-                            }
-                        }
-                    }
+                // Bortlar (Fens / Devorlar - faqat chetlariga)
+                if (Math.abs(w) == currentWidth || l == -length / 2 || l == length / 2) {
+                    Block fence = world.getBlockAt(x + w, y + 1, z + l);
+                    fence.setType(Material.NETHER_BRICK_FENCE);
+                    shipBlocks.add(fence.getLocation());
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+        }
+
+        // Kema Machtasi (Dastasi) va Yelka qismi
+        for (int mY = 1; mY <= 7; mY++) {
+            Block mast = world.getBlockAt(x, y + mY, z);
+            mast.setType(Material.OAK_LOG);
+            shipBlocks.add(mast.getLocation());
+        }
+        // Yelka (Jun qismi)
+        for (int mY = 3; mY <= 6; mY++) {
+            for (int mW = -2; mW <= 2; mW++) {
+                Block sail = world.getBlockAt(x + mW, y + mY, z);
+                sail.setType(Material.BLACK_WOOL);
+                shipBlocks.add(sail.getLocation());
+            }
         }
 
         // Suv liftini kema tubidan yer sathigacha tushirish
         Set<Location> waterLift = new HashSet<>();
         for (int curY = y - 1; curY >= groundY; curY--) {
-            Block b = world.getBlockAt(x, curY, z);
-            b.setType(Material.WATER);
-            waterLift.add(b.getLocation());
+            Block waterBlock = world.getBlockAt(x, curY, z);
+            waterBlock.setType(Material.WATER);
+            waterLift.add(waterBlock.getLocation());
         }
 
         this.currentEvent = new PirateEvent(plugin, shipOrigin, shipBlocks, waterLift);
